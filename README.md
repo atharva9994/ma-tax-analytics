@@ -3,7 +3,7 @@
 A data analytics tool for identifying non-compliant taxpayers and prioritizing audit selection for the Massachusetts Department of Revenue.
 
 ## Live App
-[Streamlit App URL]
+https://ma-tax-analytics-cktuvk93bjrh99znn4rohc.streamlit.app/
 
 ## What's Inside
 
