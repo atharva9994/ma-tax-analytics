@@ -75,17 +75,29 @@ uploaded = st.file_uploader(
     help="Accepted formats: .csv, .xlsx, .xls",
 )
 
-if uploaded:
+use_sample = st.checkbox(
+    "Use sample dataset",
+    value=False,
+    help="Load the built-in MA tax compliance sample data to explore the tool without uploading a file.",
+)
+
+# Determine source: uploaded file takes priority over sample dataset
+data_source = uploaded if uploaded else (
+    open("data/ma_tax_compliance_data.csv", "rb") if use_sample else None
+)
+source_label = "File loaded successfully" if uploaded else "Sample dataset loaded"
+
+if data_source:
     with st.spinner("Cleaning and loading data…"):
         try:
-            df, summary = data_cleaner.clean(uploaded)
+            df, summary = data_cleaner.clean(data_source)
             st.session_state["data"] = df
             st.session_state["summary"] = summary
         except Exception as exc:
             st.error(f"Failed to load file: {exc}")
             st.stop()
 
-    st.success(f"File loaded successfully — **{summary['rows_after']:,}** records ready for analysis.")
+    st.success(f"{source_label} — **{summary['rows_after']:,}** records ready for analysis.")
 
     # ── Cleaning summary metrics ──────────────────────────────────────────
     st.markdown("### Data Cleaning Summary")
@@ -115,7 +127,7 @@ if uploaded:
         "- **Industry Benchmarking** – compare businesses within each industry"
     )
 
-else:
+if not data_source:
     # ── Placeholder instructions ──────────────────────────────────────────
     st.markdown("---")
     col_a, col_b, col_c = st.columns(3)
